@@ -1,0 +1,31 @@
+name: Build & Publish
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gdal-bin
+
+      - id: cache-data
+        uses: actions/cache@v4
+        with:
+          path: data
+          key: data
+
+      - run: ./build.sh
+
+      - name: Upload mbtiles artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gebco_2024_contours
+          path: "dist/*"
